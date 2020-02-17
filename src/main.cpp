@@ -5,7 +5,6 @@
 using namespace GarrysMod;
 
 #define USERDATA_CURL 1
-#define USERDATA_CURLCODE 2
 
 #define ADD_NUM(key, val) { LUA->PushString(key); LUA->PushNumber(val); LUA->SetTable(-3); }
 #define ADD_FUN(key, val) { LUA->PushString(key); LUA->PushCFunction(val); LUA->SetTable(-3); }
@@ -43,7 +42,7 @@ LUA_FUNCTION(lua_curl_easy_perform) {
 
 	CURLcode res = curl_easy_perform(curl);
 
-	LUA->PushUserType(&res, USERDATA_CURLCODE);
+	LUA->PushNumber(res);
 	return 1;
 }
 
@@ -68,17 +67,14 @@ LUA_FUNCTION(lua_curl_easy_setopt) {
 	else
 		LUA->ArgError(3, "Value is not one of the supported types.");
 
-	LUA->PushUserType(&res, USERDATA_CURLCODE);
+	LUA->PushNumber(res);
 	return 1;
 }
 
 LUA_FUNCTION(lua_curl_easy_strerror) {
-	CURLcode *res = LUA->GetUserType<CURLcode>(1, USERDATA_CURLCODE);
+	CURLcode res = (CURLcode) LUA->CheckNumber(1);
 
-	if (res == NULL)
-		LUA->ArgError(1, "Not a CURLcode object (or object was NULL)");
-
-	const char *error = curl_easy_strerror(*res);
+	const char *error = curl_easy_strerror(res);
 
 	LUA->PushString(error);
 	return 1;
