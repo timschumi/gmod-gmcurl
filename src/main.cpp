@@ -4,7 +4,7 @@
 
 using namespace GarrysMod;
 
-#define USERDATA_CURLPTR 1
+#define USERDATA_CURL 1
 #define USERDATA_CURLCODE 2
 
 #define ADD_NUM(key, val) { LUA->PushString(key); LUA->PushNumber(val); LUA->SetTable(-3); }
@@ -21,34 +21,34 @@ void log(Lua::ILuaBase *LUA, std::string message) {
 LUA_FUNCTION(lua_curl_easy_init) {
 	CURL *curl = curl_easy_init();
 
-	LUA->PushUserType(&curl, USERDATA_CURLPTR);
+	LUA->PushUserType(curl, USERDATA_CURL);
 	return 1;
 }
 
 LUA_FUNCTION(lua_curl_easy_cleanup) {
-        CURL **curl = LUA->GetUserType<CURL *>(1, USERDATA_CURLPTR);
+        CURL *curl = LUA->GetUserType<CURL>(1, USERDATA_CURL);
 
         if (curl == NULL)
                 LUA->ArgError(1, "Not a curl object (or object was NULL).");
 
-        curl_easy_cleanup(*curl);
+        curl_easy_cleanup(curl);
         return 0;
 }
 
 LUA_FUNCTION(lua_curl_easy_perform) {
-	CURL **curl = LUA->GetUserType<CURL *>(1, USERDATA_CURLPTR);
+	CURL *curl = LUA->GetUserType<CURL>(1, USERDATA_CURL);
 
 	if (curl == NULL)
 		LUA->ArgError(1, "Not a curl object (or object was NULL).");
 
-	CURLcode res = curl_easy_perform(*curl);
+	CURLcode res = curl_easy_perform(curl);
 
 	LUA->PushUserType(&res, USERDATA_CURLCODE);
 	return 1;
 }
 
 LUA_FUNCTION(lua_curl_easy_setopt) {
-	CURL **curl = LUA->GetUserType<CURL *>(1, USERDATA_CURLPTR);
+	CURL *curl = LUA->GetUserType<CURL>(1, USERDATA_CURL);
 
 	if (curl == NULL)
 		LUA->ArgError(1, "Not a curl object (or object was NULL).");
@@ -60,11 +60,11 @@ LUA_FUNCTION(lua_curl_easy_setopt) {
 
 	CURLcode res;
 	if (LUA->IsType(3, Lua::Type::STRING))
-		res = curl_easy_setopt(*curl, option, LUA->GetString(3));
+		res = curl_easy_setopt(curl, option, LUA->GetString(3));
 	else if (LUA->IsType(3, Lua::Type::NUMBER))
-		res = curl_easy_setopt(*curl, option, LUA->GetNumber(3));
+		res = curl_easy_setopt(curl, option, LUA->GetNumber(3));
 	else if (LUA->IsType(3, Lua::Type::BOOL))
-		res = curl_easy_setopt(*curl, option, LUA->GetBool(3));
+		res = curl_easy_setopt(curl, option, LUA->GetBool(3));
 	else
 		LUA->ArgError(3, "Value is not one of the supported types.");
 
