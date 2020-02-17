@@ -52,10 +52,7 @@ LUA_FUNCTION(lua_curl_easy_setopt) {
 	if (curl == NULL)
 		LUA->ArgError(1, "Not a curl object (or object was NULL).");
 
-	if (!LUA->IsType(2, Lua::Type::NUMBER))
-		LUA->ArgError(2, "Option is NaN!");
-
-	CURLoption option = (CURLoption) LUA->GetNumber(2);
+	CURLoption option = (CURLoption) LUA->CheckNumber(2);
 
 	CURLcode res;
 	if (LUA->IsType(3, Lua::Type::STRING))
