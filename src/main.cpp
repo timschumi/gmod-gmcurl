@@ -55,11 +55,11 @@ LUA_FUNCTION(lua_curl_easy_setopt) {
 	CURLoption option = (CURLoption) LUA->CheckNumber(2);
 
 	CURLcode res;
-	if (LUA->IsType(3, Lua::Type::STRING))
+	if (LUA->IsType(3, Lua::Type::String))
 		res = curl_easy_setopt(curl, option, LUA->GetString(3));
-	else if (LUA->IsType(3, Lua::Type::NUMBER))
+	else if (LUA->IsType(3, Lua::Type::Number))
 		res = curl_easy_setopt(curl, option, LUA->GetNumber(3));
-	else if (LUA->IsType(3, Lua::Type::BOOL))
+	else if (LUA->IsType(3, Lua::Type::Bool))
 		res = curl_easy_setopt(curl, option, LUA->GetBool(3));
 	else
 		LUA->ArgError(3, "Value is not one of the supported types.");
