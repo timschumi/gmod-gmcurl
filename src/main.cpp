@@ -4,10 +4,10 @@
 
 using namespace GarrysMod;
 
-#define USERDATA_CURL 1
-
 #define ADD_NUM(key, val) { LUA->PushString(key); LUA->PushNumber(val); LUA->SetTable(-3); }
 #define ADD_FUN(key, val) { LUA->PushString(key); LUA->PushCFunction(val); LUA->SetTable(-3); }
+
+static int typeid_curl;
 
 void log(Lua::ILuaBase *LUA, std::string message) {
 	LUA->PushSpecial(Lua::SPECIAL_GLOB);
@@ -20,12 +20,12 @@ void log(Lua::ILuaBase *LUA, std::string message) {
 LUA_FUNCTION(lua_curl_easy_init) {
 	CURL *curl = curl_easy_init();
 
-	LUA->PushUserType(curl, USERDATA_CURL);
+	LUA->PushUserType(curl, typeid_curl);
 	return 1;
 }
 
 LUA_FUNCTION(lua_curl_easy_cleanup) {
-        CURL *curl = LUA->GetUserType<CURL>(1, USERDATA_CURL);
+        CURL *curl = LUA->GetUserType<CURL>(1, typeid_curl);
 
         if (curl == NULL)
                 LUA->ArgError(1, "Not a curl object (or object was NULL).");
@@ -35,7 +35,7 @@ LUA_FUNCTION(lua_curl_easy_cleanup) {
 }
 
 LUA_FUNCTION(lua_curl_easy_perform) {
-	CURL *curl = LUA->GetUserType<CURL>(1, USERDATA_CURL);
+	CURL *curl = LUA->GetUserType<CURL>(1, typeid_curl);
 
 	if (curl == NULL)
 		LUA->ArgError(1, "Not a curl object (or object was NULL).");
@@ -47,7 +47,7 @@ LUA_FUNCTION(lua_curl_easy_perform) {
 }
 
 LUA_FUNCTION(lua_curl_easy_setopt) {
-	CURL *curl = LUA->GetUserType<CURL>(1, USERDATA_CURL);
+	CURL *curl = LUA->GetUserType<CURL>(1, typeid_curl);
 
 	if (curl == NULL)
 		LUA->ArgError(1, "Not a curl object (or object was NULL).");
@@ -84,6 +84,10 @@ GMOD_MODULE_OPEN() {
 #endif
 
 	curl_global_init(CURL_GLOBAL_ALL);
+
+	// Initialize custom userdata types
+	typeid_curl = LUA->CreateMetaTable("CURL");
+	LUA->Pop();
 
 	// We are working on the global table today
 	LUA->PushSpecial(Lua::SPECIAL_GLOB);
