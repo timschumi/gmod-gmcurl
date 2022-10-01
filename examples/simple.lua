@@ -1,4 +1,4 @@
-require("curl")
+require("gmcurl")
 
 local curl = curl_easy_init()
 
