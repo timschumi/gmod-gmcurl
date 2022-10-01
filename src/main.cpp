@@ -78,11 +78,6 @@ LUA_FUNCTION(lua_curl_easy_strerror) {
 }
 
 GMOD_MODULE_OPEN() {
-#ifdef WINDOWS_BUILD
-	// Try setting the SSL default to schannel on Windows
-	curl_global_sslset(CURLSSLBACKEND_SCHANNEL, NULL, NULL);
-#endif
-
 	curl_global_init(CURL_GLOBAL_ALL);
 
 	// Initialize custom userdata types
