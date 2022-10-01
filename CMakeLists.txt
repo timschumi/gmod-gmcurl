@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(gmod-module-base/include)
-add_subdirectory(gmod-common-curl)
+add_subdirectory(curl-static-bin)
 
 add_library(gmcurl SHARED)
 
@@ -24,8 +24,8 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	target_link_options(gmcurl PRIVATE "-Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/gmcurl-linux.exp")
 endif()
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-	add_definitions(-DWINDOWS_BUILD)
-endif()
-
 set_gmod_suffix_prefix(gmcurl)
+
+if("${MORE_STATIC_LINKS}" AND ${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+	target_link_options(gmcurl PRIVATE "-static-libstdc++" "-static-libgcc")
+endif()

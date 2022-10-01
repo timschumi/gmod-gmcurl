@@ -1,3 +1,12 @@
-set(CMAKE_SYSTEM_NAME Windows)
 set(CMAKE_SYSTEM_PROCESSOR "x86")
-set(CMAKE_GENERATOR_PLATFORM "Win32")
+
+if(CMAKE_HOST_SYSTEM_NAME EQUAL "Windows")
+	set(CMAKE_GENERATOR_PLATFORM "Win32")
+endif()
+
+if(NOT CMAKE_HOST_SYSTEM_NAME EQUAL "Windows")
+	set(CMAKE_SYSTEM_NAME "Windows")
+	set(CMAKE_C_COMPILER "i686-w64-mingw32-gcc-posix")
+	set(CMAKE_CXX_COMPILER "i686-w64-mingw32-g++-posix")
+	set(CMAKE_SHARED_LINKER_FLAGS "-static")
+endif()

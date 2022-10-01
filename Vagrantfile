@@ -2,26 +2,17 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-  config.vm.define "x64" do |x64|
-    x64.vm.box = "generic/debian9"
-  end
+  config.vm.define "test-centos7", autostart: false do |test_centos7|
+    test_centos7.vm.box = "generic/centos7"
 
-  config.vm.define "x86" do |x86|
-    x86.vm.box = "generic-x32/debian9"
+    test_centos7.vm.provision "shell", inline: "yum -y install glibc.i686 libstdc++.i686"
+    test_centos7.vm.provision "shell", path: "provision-server.sh", privileged: false
+    test_centos7.vm.provision "shell", privileged: false, inline: <<-SHELL
+      mkdir -p ~/gmodds/garrysmod/lua/bin ~/gmodds64/garrysmod/lua/bin
+      ln -s /vagrant/dist/gmsv_gmcurl_linux.dll ~/gmodds/garrysmod/lua/bin/gmsv_gmcurl_linux.dll
+      ln -s /vagrant/dist/gmsv_gmcurl_linux64.dll ~/gmodds64/garrysmod/lua/bin/gmsv_gmcurl_linux64.dll
+    SHELL
   end
 
   config.vm.synced_folder ".", "/vagrant", nfs_version: 4
-
-  config.vm.provision "shell", inline: <<-SHELL
-    echo "deb http://ftp.us.debian.org/debian/ stretch-backports main" >> /etc/apt/sources.list
-    echo "deb http://ftp.us.debian.org/debian/ stretch-backports-sloppy main" >> /etc/apt/sources.list
-
-    export DEBIAN_FRONTEND=noninteractive
-
-    apt update && apt -y upgrade
-
-    apt -y install build-essential
-    apt -y -t stretch-backports-sloppy install libarchive13
-    apt -y -t stretch-backports install cmake
-  SHELL
 end
