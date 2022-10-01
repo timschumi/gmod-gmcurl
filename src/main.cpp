@@ -1,11 +1,21 @@
-#include <string>
-#include <curl/curl.h>
 #include <GarrysMod/Lua/Interface.h>
+#include <curl/curl.h>
+#include <string>
 
 using namespace GarrysMod;
 
-#define ADD_NUM(key, val) { LUA->PushString(key); LUA->PushNumber(val); LUA->SetTable(-3); }
-#define ADD_FUN(key, val) { LUA->PushString(key); LUA->PushCFunction(val); LUA->SetTable(-3); }
+#define ADD_NUM(key, val)     \
+	{                         \
+		LUA->PushString(key); \
+		LUA->PushNumber(val); \
+		LUA->SetTable(-3);    \
+	}
+#define ADD_FUN(key, val)        \
+	{                            \
+		LUA->PushString(key);    \
+		LUA->PushCFunction(val); \
+		LUA->SetTable(-3);       \
+	}
 
 static int typeid_curl;
 
@@ -25,13 +35,13 @@ LUA_FUNCTION(lua_curl_easy_init) {
 }
 
 LUA_FUNCTION(lua_curl_easy_cleanup) {
-        CURL *curl = LUA->GetUserType<CURL>(1, typeid_curl);
+	CURL *curl = LUA->GetUserType<CURL>(1, typeid_curl);
 
-        if (curl == NULL)
-                LUA->ArgError(1, "Not a curl object (or object was NULL).");
+	if (curl == NULL)
+		LUA->ArgError(1, "Not a curl object (or object was NULL).");
 
-        curl_easy_cleanup(curl);
-        return 0;
+	curl_easy_cleanup(curl);
+	return 0;
 }
 
 LUA_FUNCTION(lua_curl_easy_perform) {
